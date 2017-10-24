@@ -1,0 +1,69 @@
+{
+  "id": "1234567890",
+  "integrationId": "carrier-integration-template",
+  "configuration": {
+    "client": {
+      "username": "temando",
+      "password": "password",
+      "endpoint": "http://www.example.com/"
+    }
+  },
+  "shipment": {
+    "integrationServiceIds": [
+      "EXPRESS"
+    ],
+    "origin": {
+      "contact": {
+        "organisation": {
+          "name": "Temando"
+        },
+        "person": {
+          "last": "Smith",
+          "first": "John"
+        },
+        "phone": {
+          "number": "00 1111 2222"
+        },
+        "email": "john.smith@example.com"
+      },
+      "address": "100 Cherry St",
+      "locality": "Collierville",
+      "administrativeArea": "TN",
+      "postalCode": "38017",
+      "countryCode": "US"
+    },
+    "destination": {
+      "contact": {
+        "person": {
+          "last": "Doe",
+          "first": "Jane"
+        },
+        "phone": {
+          "number": "00 1111 2222"
+        },
+        "email": "jane.doe@example.com"
+      },
+      "address": "100 Cherry St",
+      "locality": "Austin",
+      "administrativeArea": "TX",
+      "postalCode": "73301",
+      "countryCode": "US"
+    },
+    "packages": [
+      {
+        "id": "1234567890",
+        "grossWeight": {
+          "amount": 2,
+          "unit": "kg"
+        },
+        "dimensions": {
+          "length": 300,
+          "width": 10,
+          "height": 10,
+          "unit": "cm"
+        }
+      }
+    ]
+  },
+  "createdAt": "2016-11-11T12:00:00.000+10:00"
+}

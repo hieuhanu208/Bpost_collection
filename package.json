@@ -1,0 +1,53 @@
+{
+  "name": "carrier-integration-template",
+  "version": "1.0.0",
+  "description": "A Template integration for Carrier Gateway",
+  "author": "Temando Pty Ltd",
+  "license": "proprietary",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@src.temando.io/carrier-framework/carrier-integration-template.git"
+  },
+  "dependencies": {
+    "@temando/carrier-gateway": "^2.3.1",
+    "@temando/dbpromise": "^0.0.8",
+    "@temando/instrument": "^4.1.2",
+    "@temando/marco": "^0.8.0",
+    "@temando/package-mate": "^0.6.3",
+    "@temando/service-library": "^7.1.1"
+  },
+  "devDependencies": {
+    "@temando/newman-environment-writer-cli": "^0.2.0",
+    "@temando/serverless-temando-carrier-service": "^0.7.0",
+    "@temando/serverless-temando-registry": "^0.4.1",
+    "@temando/service-registry-cli": "^0.4.1",
+    "babel-cli": "^6.24.0",
+    "babel-eslint": "^8.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-env": "^1.5.2",
+    "chai": "^4.1.2",
+    "changelog-verify": "^1.0.4",
+    "eslint": "^4.7.1",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-require-jsdoc": "^1.0.4",
+    "mocha": "^3.2.0",
+    "newman": "^3.5.2",
+    "serverless": "^1.15.3",
+    "serverless-build-plugin": "^2.3.0",
+    "serverless-offline": "^3.16.0",
+    "version-changelog": "^2.1.0"
+  },
+  "scripts": {
+    "start": "sls offline start",
+    "lint": "eslint \"src/**/*.js\"",
+    "test": "mocha tests/units --compilers js:babel-core/register --recursive --timeout 6000",
+    "coverage": "echo \"100%\"",
+    "validate": "newman run tests/integrations/postman-collection.json -e tests/integrations/postman-environment.json -x",
+    "newman:env": "temando-newman env write tests/integrations/postman-environment.json -o tests/integrations/deploy.postman-environment.json -e $T_ENV -r $T_AWS_REGION",
+    "newman:run:offline": "newman -c tests/integrations/postman-collection.json -e tests/integrations/postman-environment.json",
+    "newman:run:deployed": "newman -c tests/integrations/postman-collection.json -e tests/integrations/deploy.postman-environment.json",
+    "version": "version-changelog CHANGELOG.md && changelog-verify CHANGELOG.md && git add CHANGELOG.md"
+  }
+}

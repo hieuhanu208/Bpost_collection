@@ -1,0 +1,43 @@
+{
+  "targetService": "carrier-integration-template",
+  "keyValues": [],
+  "services": [
+    {
+      "id": "temando-carrier-service",
+      "currentRegion": "us-east-2",
+      "deployments": [
+        {
+          "region": "us-east-2",
+          "endpoint": "https://dvrko28l8l.execute-api.us-east-2.amazonaws.com/hieunv19",
+          "queues": [],
+          "streams": [],
+          "topics": [],
+          "at": "2017-10-24T04:22:51.886Z",
+          "$schema": "http://service-registry.temando.com/schema/service-deployment+v1#"
+        }
+      ]
+    },
+    {
+      "id": "temando-instrumentation-gateway",
+      "currentRegion": "us-east-2",
+      "deployments": [
+        {
+          "region": "us-east-2",
+          "endpoint": "https://czfv2pdx90.execute-api.us-east-2.amazonaws.com/hieunv19",
+          "queues": [
+            {
+              "id": "ingest",
+              "url": "https://sqs.us-east-2.amazonaws.com/533240832586/instrumentation-gateway-hieunv19-ingest"
+            }
+          ],
+          "streams": [],
+          "topics": [],
+          "at": "2017-10-24T02:52:09.084Z",
+          "version": "ca1dcffc13f021e1b9eab0211522fa606aa4c5b5",
+          "$schema": "http://service-registry.temando.com/schema/service-deployment+v1#"
+        }
+      ]
+    }
+  ],
+  "$schema": "http://service-registry.temando.com/schema/service-env+v1#"
+}

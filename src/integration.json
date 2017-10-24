@@ -1,0 +1,121 @@
+{
+  "integrationId": "carrier-integration-template",
+  "name": "Template Integration",
+  "brand": {
+    "name": "Temando",
+    "description": "Intelligent Shipping and Fulfillment Software",
+    "logo": {
+      "mimeType": "image/svg+xml",
+      "width": 235,
+      "height": 50,
+      "encoding": "base64"
+    }
+  },
+  "description": "A Template integration for Carrier Gateway",
+  "methods": {
+    "meta": {
+      "path": "/integrations/carrier-integration-template/integration",
+      "GET": {
+        "requestSchemas": null,
+        "responseSchemas": [
+          "http://carrier-gateway.temando.com/schema/integration+v3#"
+        ]
+      }
+    },
+    "quote": {
+      "path": "/integrations/carrier-integration-template/quote",
+      "POST": {
+        "requestSchemas": [
+          "http://carrier-gateway.temando.com/schema/template/configuration#",
+          "http://carrier-gateway.temando.com/schema/quote-request+v5#"
+        ],
+        "responseSchemas": [
+          "http://carrier-gateway.temando.com/schema/quote-response+v4#"
+        ]
+      }
+    },
+    "booking": {
+      "path": "/integrations/carrier-integration-template/booking",
+      "POST": {
+        "requestSchemas": [
+          "http://carrier-gateway.temando.com/schema/template/configuration#",
+          "http://carrier-gateway.temando.com/schema/booking-request+v1#"
+        ],
+        "responseSchemas": [
+          "http://carrier-gateway.temando.com/schema/booking-response+v1#"
+        ]
+      },
+      "DELETE": {
+        "requestSchemas": [
+          "http://carrier-gateway.temando.com/schema/template/configuration#",
+          "http://carrier-gateway.temando.com/schema/cancel-request+v2#"
+        ],
+        "responseSchemas": [
+          "http://carrier-gateway.temando.com/schema/cancel-response+v2#"
+        ]
+      }
+    },
+    "tracking": {
+      "path": "/integrations/carrier-integration-template/tracking",
+      "POST": {
+        "requestSchemas": [
+          "http://carrier-gateway.temando.com/schema/template/configuration#",
+          "http://carrier-gateway.temando.com/schema/track-request+v4#"
+        ],
+        "responseSchemas": [
+          "http://carrier-gateway.temando.com/schema/track-response+v4#"
+        ]
+      }
+    },
+    "completion": {
+      "path": "/integrations/carrier-integration-template/booking/completion",
+      "POST": {
+        "requestSchemas": [
+          "http://carrier-gateway.temando.com/schema/template/configuration#",
+          "http://carrier-gateway.temando.com/schema/completion-request+v1#"
+        ],
+        "responseSchemas": [
+          "http://carrier-gateway.temando.com/schema/completion-response+v1#"
+        ]
+      }
+    },
+    "documentation": {
+      "path": "/integrations/carrier-integration-template/booking/documentation",
+      "POST": {
+        "requestSchemas": [
+          "http://carrier-gateway.temando.com/schema/template/configuration#",
+          "http://carrier-gateway.temando.com/schema/documentation-request+v2#"
+        ],
+        "responseSchemas": [
+          "http://carrier-gateway.temando.com/schema/documentation-response+v1#"
+        ]
+      }
+    },
+    "registration": {
+      "marco": {
+        "path": "/integrations/carrier-integration-template/integration/marco",
+        "GET": {
+          "requestSchemas": null,
+          "responseSchemas": null
+        }
+      }
+    }
+  },
+  "services": [
+    {
+      "id": "EXPRESS",
+      "name": "Express Shipping",
+      "capabilities": {
+        "authorityToLeave": false,
+        "signature": false,
+        "cashOnDelivery": false,
+        "homeCollection": false,
+        "return": false,
+        "paperlessTrade": false,
+        "homeDelivery": false,
+        "deliveryTimeFrame": false
+      },
+      "routes": []
+    }
+  ]
+}

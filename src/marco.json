@@ -1,0 +1,2083 @@
+{
+  "workflow": {
+    "id": "workflow.carrierConnectTemplate",
+    "steps": [
+      {
+        "id": "hasExisting",
+        "type": "binaryChoice",
+        "title": {
+          "messageKey": "workflow.carrierConnectTemplate.titles.hasExisting"
+        },
+        "next": [
+          {
+            "value": true,
+            "label": {
+              "messageKey": "common.yes"
+            },
+            "stepId": "createConfiguration"
+          },
+          {
+            "value": false,
+            "label": {
+              "messageKey": "common.no"
+            },
+            "stepId": "noExisting"
+          }
+        ]
+      },
+      {
+        "id": "noExisting",
+        "type": "notice",
+        "title": {
+          "messageKey": "workflow.carrierConnectTemplate.titles.noExisting"
+        },
+        "notice": {
+          "messageKey": "workflow.carrierConnectTemplate.noExisting.notice"
+        },
+        "next": [
+          {
+            "done": true,
+            "label": {
+              "messageKey": "common.finish"
+            }
+          }
+        ]
+      },
+      {
+        "id": "createConfiguration",
+        "type": "form",
+        "title": {
+          "messageKey": "workflow.carrierConnectTemplate.createConfiguration.title"
+        },
+        "description": {
+          "messageKey": "workflow.carrierConnectTemplate.createConfiguration.description"
+        },
+        "form": {
+          "id": "createConfiguration",
+          "controlSets": [
+            {
+              "id": "createConfiguration",
+              "controls": [
+                {
+                  "id": "name",
+                  "ref": "#/data/attributes/connectionName",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.createConfiguration.connectionName"
+                  }
+                },
+                {
+                  "id": "locations",
+                  "ref": "#/data/attributes/locationIds",
+                  "type": "multiChoice",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.createConfiguration.locations"
+                  },
+                  "dataSource": {
+                    "trigger": {
+                      "event": "onload"
+                    },
+                    "httpRequest": {
+                      "url": "{endpoint}/locations",
+                      "method": "GET",
+                      "urlParams": [
+                        {
+                          "param": "endpoint",
+                          "stateRef": "#/temando/apiEndpoint"
+                        }
+                      ],
+                      "headers": [
+                        {
+                          "header": "Authorization",
+                          "stateRef": "#/temando/apiToken",
+                          "transforms": [
+                            {
+                              "type": "prefixString",
+                              "prefix": "Bearer "
+                            }
+                          ]
+                        },
+                        {
+                          "header": "Accept",
+                          "value": "application/vnd.api+json"
+                        },
+                        {
+                          "header": "Content-Type",
+                          "value": "application/vnd.api+json"
+                        }
+                      ]
+                    },
+                    "transforms": [
+                      {
+                        "type": "getValue",
+                        "ref": "#/data"
+                      },
+                      {
+                        "type": "transformEach",
+                        "transform": {
+                          "type": "changeShape",
+                          "values": [
+                            {
+                              "input": "#/attributes/name",
+                              "output": "#/title"
+                            },
+                            {
+                              "input": "#/id",
+                              "output": "#/value"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "services",
+                  "ref": "#/data/attributes/integrationServiceIds",
+                  "type": "multiChoice",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.createConfiguration.services"
+                  },
+                  "dataSource": {
+                    "trigger": {
+                      "event": "onload"
+                    },
+                    "httpRequest": {
+                      "url": "{endpoint}/carriers/carrier-integration-template",
+                      "method": "GET",
+                      "urlParams": [
+                        {
+                          "param": "endpoint",
+                          "stateRef": "#/temando/apiEndpoint"
+                        }
+                      ],
+                      "headers": [
+                        {
+                          "header": "Authorization",
+                          "stateRef": "#/temando/apiToken",
+                          "transforms": [
+                            {
+                              "type": "prefixString",
+                              "prefix": "Bearer "
+                            }
+                          ]
+                        },
+                        {
+                          "header": "Accept",
+                          "value": "application/vnd.api+json"
+                        },
+                        {
+                          "header": "Content-Type",
+                          "value": "application/vnd.api+json"
+                        }
+                      ]
+                    },
+                    "transforms": [
+                      {
+                        "type": "getValue",
+                        "ref": "#/data/attributes/services"
+                      },
+                      {
+                        "type": "transformEach",
+                        "transform": {
+                          "type": "changeShape",
+                          "values": [
+                            {
+                              "input": "#/name",
+                              "output": "#/title"
+                            },
+                            {
+                              "input": "#/id",
+                              "output": "#/value"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "httpRequest": {
+            "method": "POST",
+            "url": "{endpoint}/carriers/configuration",
+            "urlParams": [
+              {
+                "param": "endpoint",
+                "stateRef": "#/temando/apiEndpoint"
+              }
+            ],
+            "headers": [
+              {
+                "transforms": [
+                  {
+                    "type": "prefixString",
+                    "prefix": "Bearer "
+                  }
+                ],
+                "header": "Authorization",
+                "stateRef": "#/temando/apiToken"
+              },
+              {
+                "header": "Accept",
+                "value": "application/vnd.api+json"
+              },
+              {
+                "header": "Content-Type",
+                "value": "application/vnd.api+json"
+              }
+            ],
+            "requestData": [
+              {
+                "value": "carrier-account-configuration",
+                "ref": "#/data/type"
+              },
+              {
+                "value": "carrier-integration-template",
+                "ref": "#/data/attributes/integrationId"
+              },
+              {
+                "ref": "#/data/attributes/status",
+                "value": "pendingTemando"
+              },
+              {
+                "ref": "#/data/attributes/configuration",
+                "value": {}
+              }
+            ]
+          }
+        },
+        "next": [
+          {
+            "stepId": "existingForm",
+            "label": {
+              "messageKey": "common.submitForm"
+            }
+          }
+        ]
+      },
+      {
+        "id": "existingForm",
+        "type": "form",
+        "title": {
+          "messageKey": "workflow.carrierConnectTemplate.titles.existingForm"
+        },
+        "form": {
+          "id": "existingForm",
+          "controlSets": [
+            {
+              "id": "existingForm",
+              "controls": [
+                {
+                  "id": "firstName",
+                  "ref": "#/data/attributes/firstName",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.firstName"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "lastName",
+                  "ref": "#/data/attributes/lastName",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.lastName"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "company",
+                  "ref": "#/data/attributes/company",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.company"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "title",
+                  "ref": "#/data/attributes/title",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.title"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "country",
+                  "ref": "#/data/attributes/country",
+                  "type": "dropdown",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.country"
+                  },
+                  "uiMeta": {
+                    "sortOptions": {
+                      "by": "title",
+                      "order": "ASC"
+                    }
+                  },
+                  "options": [
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ad"
+                      },
+                      "value": "AD"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ae"
+                      },
+                      "value": "AE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.af"
+                      },
+                      "value": "AF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ag"
+                      },
+                      "value": "AG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ai"
+                      },
+                      "value": "AI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.al"
+                      },
+                      "value": "AL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.am"
+                      },
+                      "value": "AM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ao"
+                      },
+                      "value": "AO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.aq"
+                      },
+                      "value": "AQ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ar"
+                      },
+                      "value": "AR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.as"
+                      },
+                      "value": "AS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.at"
+                      },
+                      "value": "AT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.au"
+                      },
+                      "value": "AU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.aw"
+                      },
+                      "value": "AW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ax"
+                      },
+                      "value": "AX"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.az"
+                      },
+                      "value": "AZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ba"
+                      },
+                      "value": "BA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bb"
+                      },
+                      "value": "BB"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bd"
+                      },
+                      "value": "BD"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.be"
+                      },
+                      "value": "BE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bf"
+                      },
+                      "value": "BF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bg"
+                      },
+                      "value": "BG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bh"
+                      },
+                      "value": "BH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bi"
+                      },
+                      "value": "BI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bj"
+                      },
+                      "value": "BJ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bl"
+                      },
+                      "value": "BL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bm"
+                      },
+                      "value": "BM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bn"
+                      },
+                      "value": "BN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bo"
+                      },
+                      "value": "BO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bq"
+                      },
+                      "value": "BQ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.br"
+                      },
+                      "value": "BR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bs"
+                      },
+                      "value": "BS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bt"
+                      },
+                      "value": "BT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bv"
+                      },
+                      "value": "BV"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bw"
+                      },
+                      "value": "BW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.by"
+                      },
+                      "value": "BY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.bz"
+                      },
+                      "value": "BZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ca"
+                      },
+                      "value": "CA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cc"
+                      },
+                      "value": "CC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cd"
+                      },
+                      "value": "CD"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cf"
+                      },
+                      "value": "CF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cg"
+                      },
+                      "value": "CG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ch"
+                      },
+                      "value": "CH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ci"
+                      },
+                      "value": "CI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ck"
+                      },
+                      "value": "CK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cl"
+                      },
+                      "value": "CL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cm"
+                      },
+                      "value": "CM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cn"
+                      },
+                      "value": "CN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.co"
+                      },
+                      "value": "CO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cr"
+                      },
+                      "value": "CR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cu"
+                      },
+                      "value": "CU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cv"
+                      },
+                      "value": "CV"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cw"
+                      },
+                      "value": "CW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cx"
+                      },
+                      "value": "CX"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cy"
+                      },
+                      "value": "CY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.cz"
+                      },
+                      "value": "CZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.de"
+                      },
+                      "value": "DE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.dj"
+                      },
+                      "value": "DJ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.dk"
+                      },
+                      "value": "DK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.dm"
+                      },
+                      "value": "DM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.do"
+                      },
+                      "value": "DO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.dz"
+                      },
+                      "value": "DZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ec"
+                      },
+                      "value": "EC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ee"
+                      },
+                      "value": "EE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.eg"
+                      },
+                      "value": "EG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.eh"
+                      },
+                      "value": "EH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.er"
+                      },
+                      "value": "ER"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.es"
+                      },
+                      "value": "ES"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.et"
+                      },
+                      "value": "ET"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.fi"
+                      },
+                      "value": "FI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.fj"
+                      },
+                      "value": "FJ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.fk"
+                      },
+                      "value": "FK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.fm"
+                      },
+                      "value": "FM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.fo"
+                      },
+                      "value": "FO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.fr"
+                      },
+                      "value": "FR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ga"
+                      },
+                      "value": "GA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gb"
+                      },
+                      "value": "GB"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gd"
+                      },
+                      "value": "GD"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ge"
+                      },
+                      "value": "GE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gf"
+                      },
+                      "value": "GF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gg"
+                      },
+                      "value": "GG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gh"
+                      },
+                      "value": "GH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gi"
+                      },
+                      "value": "GI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gl"
+                      },
+                      "value": "GL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gm"
+                      },
+                      "value": "GM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gn"
+                      },
+                      "value": "GN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gp"
+                      },
+                      "value": "GP"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gq"
+                      },
+                      "value": "GQ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gr"
+                      },
+                      "value": "GR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gs"
+                      },
+                      "value": "GS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gt"
+                      },
+                      "value": "GT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gu"
+                      },
+                      "value": "GU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gw"
+                      },
+                      "value": "GW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.gy"
+                      },
+                      "value": "GY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.hk"
+                      },
+                      "value": "HK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.hm"
+                      },
+                      "value": "HM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.hn"
+                      },
+                      "value": "HN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.hr"
+                      },
+                      "value": "HR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ht"
+                      },
+                      "value": "HT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.hu"
+                      },
+                      "value": "HU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.id"
+                      },
+                      "value": "ID"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ie"
+                      },
+                      "value": "IE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.il"
+                      },
+                      "value": "IL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.im"
+                      },
+                      "value": "IM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.in"
+                      },
+                      "value": "IN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.io"
+                      },
+                      "value": "IO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.iq"
+                      },
+                      "value": "IQ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ir"
+                      },
+                      "value": "IR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.is"
+                      },
+                      "value": "IS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.it"
+                      },
+                      "value": "IT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.je"
+                      },
+                      "value": "JE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.jm"
+                      },
+                      "value": "JM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.jo"
+                      },
+                      "value": "JO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.jp"
+                      },
+                      "value": "JP"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ke"
+                      },
+                      "value": "KE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.kg"
+                      },
+                      "value": "KG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.kh"
+                      },
+                      "value": "KH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ki"
+                      },
+                      "value": "KI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.km"
+                      },
+                      "value": "KM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.kn"
+                      },
+                      "value": "KN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.kp"
+                      },
+                      "value": "KP"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.kr"
+                      },
+                      "value": "KR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.kw"
+                      },
+                      "value": "KW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ky"
+                      },
+                      "value": "KY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.kz"
+                      },
+                      "value": "KZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.la"
+                      },
+                      "value": "LA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.lb"
+                      },
+                      "value": "LB"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.lc"
+                      },
+                      "value": "LC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.li"
+                      },
+                      "value": "LI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.lk"
+                      },
+                      "value": "LK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.lr"
+                      },
+                      "value": "LR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ls"
+                      },
+                      "value": "LS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.lt"
+                      },
+                      "value": "LT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.lu"
+                      },
+                      "value": "LU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.lv"
+                      },
+                      "value": "LV"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ly"
+                      },
+                      "value": "LY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ma"
+                      },
+                      "value": "MA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mc"
+                      },
+                      "value": "MC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.md"
+                      },
+                      "value": "MD"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.me"
+                      },
+                      "value": "ME"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mf"
+                      },
+                      "value": "MF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mg"
+                      },
+                      "value": "MG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mh"
+                      },
+                      "value": "MH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mk"
+                      },
+                      "value": "MK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ml"
+                      },
+                      "value": "ML"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mm"
+                      },
+                      "value": "MM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mn"
+                      },
+                      "value": "MN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mo"
+                      },
+                      "value": "MO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mp"
+                      },
+                      "value": "MP"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mq"
+                      },
+                      "value": "MQ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mr"
+                      },
+                      "value": "MR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ms"
+                      },
+                      "value": "MS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mt"
+                      },
+                      "value": "MT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mu"
+                      },
+                      "value": "MU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mv"
+                      },
+                      "value": "MV"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mw"
+                      },
+                      "value": "MW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mx"
+                      },
+                      "value": "MX"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.my"
+                      },
+                      "value": "MY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.mz"
+                      },
+                      "value": "MZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.na"
+                      },
+                      "value": "NA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.nc"
+                      },
+                      "value": "NC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ne"
+                      },
+                      "value": "NE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.nf"
+                      },
+                      "value": "NF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ng"
+                      },
+                      "value": "NG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ni"
+                      },
+                      "value": "NI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.nl"
+                      },
+                      "value": "NL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.no"
+                      },
+                      "value": "NO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.np"
+                      },
+                      "value": "NP"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.nr"
+                      },
+                      "value": "NR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.nu"
+                      },
+                      "value": "NU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.nz"
+                      },
+                      "value": "NZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.om"
+                      },
+                      "value": "OM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pa"
+                      },
+                      "value": "PA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pe"
+                      },
+                      "value": "PE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pf"
+                      },
+                      "value": "PF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pg"
+                      },
+                      "value": "PG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ph"
+                      },
+                      "value": "PH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pk"
+                      },
+                      "value": "PK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pl"
+                      },
+                      "value": "PL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pm"
+                      },
+                      "value": "PM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pn"
+                      },
+                      "value": "PN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pr"
+                      },
+                      "value": "PR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ps"
+                      },
+                      "value": "PS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pt"
+                      },
+                      "value": "PT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.pw"
+                      },
+                      "value": "PW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.py"
+                      },
+                      "value": "PY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.qa"
+                      },
+                      "value": "QA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.re"
+                      },
+                      "value": "RE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ro"
+                      },
+                      "value": "RO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.rs"
+                      },
+                      "value": "RS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ru"
+                      },
+                      "value": "RU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.rw"
+                      },
+                      "value": "RW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sa"
+                      },
+                      "value": "SA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sb"
+                      },
+                      "value": "SB"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sc"
+                      },
+                      "value": "SC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sd"
+                      },
+                      "value": "SD"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.se"
+                      },
+                      "value": "SE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sg"
+                      },
+                      "value": "SG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sh"
+                      },
+                      "value": "SH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.si"
+                      },
+                      "value": "SI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sj"
+                      },
+                      "value": "SJ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sk"
+                      },
+                      "value": "SK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sl"
+                      },
+                      "value": "SL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sm"
+                      },
+                      "value": "SM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sn"
+                      },
+                      "value": "SN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.so"
+                      },
+                      "value": "SO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sr"
+                      },
+                      "value": "SR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ss"
+                      },
+                      "value": "SS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.st"
+                      },
+                      "value": "ST"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sv"
+                      },
+                      "value": "SV"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sx"
+                      },
+                      "value": "SX"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sy"
+                      },
+                      "value": "SY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.sz"
+                      },
+                      "value": "SZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tc"
+                      },
+                      "value": "TC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.td"
+                      },
+                      "value": "TD"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tf"
+                      },
+                      "value": "TF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tg"
+                      },
+                      "value": "TG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.th"
+                      },
+                      "value": "TH"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tj"
+                      },
+                      "value": "TJ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tk"
+                      },
+                      "value": "TK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tl"
+                      },
+                      "value": "TL"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tm"
+                      },
+                      "value": "TM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tn"
+                      },
+                      "value": "TN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.to"
+                      },
+                      "value": "TO"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tr"
+                      },
+                      "value": "TR"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tt"
+                      },
+                      "value": "TT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tv"
+                      },
+                      "value": "TV"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tw"
+                      },
+                      "value": "TW"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.tz"
+                      },
+                      "value": "TZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ua"
+                      },
+                      "value": "UA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ug"
+                      },
+                      "value": "UG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.um"
+                      },
+                      "value": "UM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.us"
+                      },
+                      "value": "US"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.uy"
+                      },
+                      "value": "UY"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.uz"
+                      },
+                      "value": "UZ"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.va"
+                      },
+                      "value": "VA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.vc"
+                      },
+                      "value": "VC"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ve"
+                      },
+                      "value": "VE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.vg"
+                      },
+                      "value": "VG"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.vi"
+                      },
+                      "value": "VI"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.vn"
+                      },
+                      "value": "VN"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.vu"
+                      },
+                      "value": "VU"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.wf"
+                      },
+                      "value": "WF"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ws"
+                      },
+                      "value": "WS"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.xk"
+                      },
+                      "value": "XK"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.ye"
+                      },
+                      "value": "YE"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.yt"
+                      },
+                      "value": "YT"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.za"
+                      },
+                      "value": "ZA"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.zm"
+                      },
+                      "value": "ZM"
+                    },
+                    {
+                      "title": {
+                        "messageKey": "common.countries.zw"
+                      },
+                      "value": "ZW"
+                    }
+                  ],
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "email",
+                  "ref": "#/data/attributes/email",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.email"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "phone",
+                  "ref": "#/data/attributes/phone",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.phone"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "bestContact",
+                  "ref": "#/data/attributes/bestContact",
+                  "type": "text",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.bestContact"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "services",
+                  "ref": "#/data/attributes/services",
+                  "type": "textarea",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.services"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "carrierAccountInfo",
+                  "ref": "#/data/attributes/carrierAccountInfo",
+                  "type": "textarea",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.carrierAccountInfo"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "numberOfShipments",
+                  "ref": "#/data/attributes/numberOfShipments",
+                  "type": "number",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.numberOfShipments"
+                  },
+                  "validation": [
+                    {
+                      "rule": "required",
+                      "messages": {
+                        "required": {
+                          "messageKey": "common.validation.required"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "furtherInfo",
+                  "ref": "#/data/attributes/furtherInfo",
+                  "type": "textarea",
+                  "title": {
+                    "messageKey": "workflow.carrierConnectTemplate.existingForm.furtherInfo"
+                  }
+                }
+              ]
+            }
+          ],
+          "httpRequest": {
+            "url": "{endpoint}/carriers/carrier-integration-template/support",
+            "method": "POST",
+            "urlParams": [
+              {
+                "param": "endpoint",
+                "stateRef": "#/temando/apiEndpoint"
+              }
+            ],
+            "headers": [
+              {
+                "header": "Authorization",
+                "stateRef": "#/temando/apiToken",
+                "transforms": [
+                  {
+                    "type": "prefixString",
+                    "prefix": "Bearer "
+                  }
+                ]
+              },
+              {
+                "header": "Accept",
+                "value": "application/vnd.api+json"
+              },
+              {
+                "header": "Content-Type",
+                "value": "application/vnd.api+json"
+              }
+            ],
+            "requestData": [
+              {
+                "ref": "#/data/type",
+                "value": "carrier-registration-support"
+              },
+              {
+                "ref": "#/data/attributes/configurationId",
+                "stateRef": "#/form/createConfiguration/responseData/data/id"
+              }
+            ]
+          }
+        },
+        "next": [
+          {
+            "label": {
+              "messageKey": "common.submitForm"
+            },
+            "stepId": "existingDone"
+          }
+        ]
+      },
+      {
+        "id": "existingDone",
+        "title": {
+          "messageKey": "workflow.carrierConnectTemplate.titles.existingDone"
+        },
+        "type": "notice",
+        "notice": {
+          "messageKey": "workflow.carrierConnectTemplate.existingDone.notice"
+        },
+        "next": [
+          {
+            "done": true
+          }
+        ]
+      }
+    ]
+  },
+  "included": {
+    "messages": {
+      "workflow.carrierConnectTemplate.titles.existingDone": "Completed",
+      "workflow.carrierConnectTemplate.titles.noExisting": "Contact Batman",
+      "workflow.carrierConnectTemplate.titles.hasExisting": "Do you have an existing Carrier Integration Template account?",
+      "workflow.carrierConnectTemplate.titles.existingForm": "My Carrier Integration Template Account Details",
+      "workflow.carrierConnectTemplate.noExisting.notice": "If you would like to set up an account with Batman, tell Superman",
+      "workflow.carrierConnectTemplate.existingDone.notice": "Thank you for submitting your Carrier Integration Template account details. We will be in touch once this carrier is live in your account.",
+      "workflow.carrierConnectTemplate.existingForm.firstName": "First Name",
+      "workflow.carrierConnectTemplate.existingForm.lastName": "Last Name",
+      "workflow.carrierConnectTemplate.existingForm.company": "Company / Trading Name",
+      "workflow.carrierConnectTemplate.existingForm.title": "Title / Position",
+      "workflow.carrierConnectTemplate.existingForm.country": "Country",
+      "workflow.carrierConnectTemplate.existingForm.email": "Email",
+      "workflow.carrierConnectTemplate.existingForm.phone": "Phone",
+      "workflow.carrierConnectTemplate.existingForm.bestContact": "Best time and method of contact",
+      "workflow.carrierConnectTemplate.existingForm.services": "What services do you want to use with this carrier account?",
+      "workflow.carrierConnectTemplate.existingForm.carrierAccountInfo": "Specific carrier account information",
+      "workflow.carrierConnectTemplate.existingForm.numberOfShipments": "No. of Shipments Annually",
+      "workflow.carrierConnectTemplate.existingForm.furtherInfo": "Further information",
+      "workflow.carrierConnectTemplate.createConfiguration.title": "Create Configuration",
+      "workflow.carrierConnectTemplate.createConfiguration.description": "Please configure how this Carrier Integration Template connection should apply within your account.",
+      "workflow.carrierConnectTemplate.createConfiguration.connectionName": "Nickname",
+      "workflow.carrierConnectTemplate.createConfiguration.locations": "Locations",
+      "workflow.carrierConnectTemplate.createConfiguration.services": "Services"
+    }
+  }
+}

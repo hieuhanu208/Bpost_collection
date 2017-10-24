@@ -1,0 +1,10 @@
+{
+  "$schema": "http://service-registry.temando.com/schema/service-definition+v1#",
+  "id": "carrier-integration-template",
+  "dependencies": [
+    "temando-carrier-service",
+    "temando-instrumentation-gateway"
+  ],
+  "kvs": [],
+  "publicQueues": []
+}

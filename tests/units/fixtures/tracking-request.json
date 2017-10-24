@@ -1,0 +1,15 @@
+{
+  "id": "1234567890",
+  "integrationId": "carrier-integration-template",
+  "configuration": {
+    "client": {
+      "username": "temando",
+      "password": "password",
+      "endpoint": "http://www.example.com/"
+    }
+  },
+  "trackingReferences": [
+    "1234567890"
+  ],
+  "createdAt": "2016-11-11T12:00:00.000+10:00"
+}

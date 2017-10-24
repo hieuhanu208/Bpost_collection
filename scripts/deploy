@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+env=${T_ENV-$1};
+region=${T_AWS_REGION-$2};
+profile=${AWS_PROFILE-$3};
+commit=${T_COMMIT_SHA-$(git rev-parse HEAD)}
+
+echo "
+ENV: $env
+DEPLOYMENT_REGION: $region
+AWS_PROFILE: $profile
+COMMIT_SHA: $commit
+";
+
+yarn registry -- service pull-env "$region" -e "$env";
+yarn sls -- deploy --stage "$env" --region "$region" --profile "$profile";
+
+yarn registry -- service register -- -e "$env";
+yarn sls -- registry update --stage "$env" --region "$region" -v "$commit";
+yarn sls -- carrier-service publish -s "$env" -r "$region"

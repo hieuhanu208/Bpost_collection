@@ -1,0 +1,81 @@
+service: ${file(./package.json):name}
+
+frameworkVersion: ">=1.10.1 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  memorySize: 256
+  timeout: 30
+  
+  stage: ${env:ENV, opt:stage, file(serverless.env.yml):stage}
+  region: ${env:DEPLOYMENT_REGION, opt:region, file(serverless.env.yml):region}
+  profile: ${env:AWS_PROFILE, opt:profile, file(serverless.env.yml):profile}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - SQS:SendMessage
+        - SQS:GetQueueUrl
+        - SQS:GetQueueAttributes
+      Resource: "arn:aws:sqs:${self:provider.region}:*:temando-instrumentation-gateway-${self:provider.stage}-ingest"
+
+resources:
+  Resources: ${file(serverless.cf.yml):Resources}
+  Outputs: ${file(serverless.cf.yml):Outputs}
+
+functions:
+  meta:
+    handler: functions/handler.handler
+    events:
+      - http: GET integrations/${self:service}/integration
+
+  registration:
+    handler: functions/handler.handler
+    events:
+      - http: GET integrations/${self:service}/integration/marco
+
+  quote:
+    handler: functions/handler.handler
+    events:
+      - http: POST integrations/${self:service}/quote
+
+  booking:
+    handler: functions/handler.handler
+    events:
+      - http: POST integrations/${self:service}/booking
+      - http: DELETE integrations/${self:service}/booking
+
+  completion:
+    handler: functions/handler.handler
+    events:
+      - http: POST integrations/${self:service}/booking/completion
+
+  documentation:
+    handler: functions/handler.handler
+    events:
+      - http: POST integrations/${self:service}/booking/documentation
+
+  tracking:
+    handler: functions/handler.handler
+    events:
+      - http: POST integrations/${self:service}/tracking
+
+plugins:
+  - serverless-offline
+  - serverless-build-plugin
+  - "@temando/serverless-temando-registry"
+  - "@temando/serverless-temando-carrier-service"
+
+custom:
+  serverless-offline:
+    babelOptions:
+      presets:
+        - env:
+            targets:
+              node: "6.10"
+            exclude:
+              - transform-regenerator
+            useBuiltIns: true
+      plugins:
+        - transform-object-rest-spread

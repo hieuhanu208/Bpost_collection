@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+env=${T_ENV-$1}
+region=${T_AWS_REGION-$2}
+
+yarn registry -- service pull-env "$region" -e "$env";
+
+yarn newman:env
+yarn newman:run:deployed

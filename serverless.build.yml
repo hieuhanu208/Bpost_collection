@@ -1,0 +1,23 @@
+method: "bundle"
+
+sourceMaps: true
+babel: true
+uglify: false
+
+modules:
+ exclude:
+   - aws-sdk
+ deepExclude:
+   - aws-sdk
+
+include:
+  - "functions/**"
+  - "src/**"
+  - "resources/schemas/**"
+  - "ts-definition.json"
+  - "ts-env.json"
+
+functions:
+  meta:
+    include:
+      - "resources/brand/**"

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://carrier-gateway.temando.com/schema/template/configuration#",
+  "description": "Validates a request contains the required configuration fields",
+  "type": "object",
+  "properties": {
+    "configuration": {
+      "$ref": "#/definitions/configuration"
+    }
+  },
+  "definitions": {
+    "configuration": {
+      "type": "object",
+      "required": [
+        "client"
+      ],
+      "properties": {
+        "client": {
+          "$ref": "#/definitions/client"
+        }
+      }
+    },
+    "client": {
+      "type": "object",
+      "required": [
+        "endpoint",
+        "username",
+        "password"
+      ],
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "The carriers API endpoint",
+          "minLength": 1
+        },
+        "username": {
+          "type": "string",
+          "description": "The clients username",
+          "minLength": 1
+        },
+        "password": {
+          "type": "string",
+          "description": "The clients password",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

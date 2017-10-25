@@ -11,10 +11,7 @@
   },
   "dependencies": {
     "@temando/carrier-gateway": "^2.3.1",
-    "@temando/dbpromise": "^0.0.8",
-    "@temando/instrument": "^4.1.2",
     "@temando/marco": "^0.8.0",
-    "@temando/package-mate": "^0.6.3",
     "@temando/service-library": "^7.1.1"
   },
   "devDependencies": {
@@ -35,8 +32,8 @@
     "mocha": "^3.2.0",
     "newman": "^3.5.2",
     "serverless": "^1.15.3",
-    "serverless-build-plugin": "^2.3.0",
-    "serverless-offline": "^3.16.0",
+    "serverless-build-plugin": "^2.0.3",
+    "serverless-offline": "^3.13.1",
     "version-changelog": "^2.1.0"
   },
   "scripts": {
